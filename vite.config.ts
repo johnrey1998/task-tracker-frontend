@@ -1,5 +1,7 @@
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, lazyPlugins } from "vite-plus";
+import path from "path";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -30,5 +32,10 @@ export default defineConfig({
       },
     ],
   },
-  plugins: lazyPlugins(() => [react()]),
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  plugins: lazyPlugins(() => [react(), tailwindcss()]),
 });

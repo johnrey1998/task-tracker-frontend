@@ -9,6 +9,11 @@ export const DashboardPage: React.FC = () => {
   const [tasks, setTasks] = useState<TaskResponse[]>([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+
   const [error, setError] = useState<string | null>(null);
 
   const fetchTasks = async () => {
@@ -43,6 +48,33 @@ export const DashboardPage: React.FC = () => {
       fetchTasks();
     } catch (err: any) {
       setError(err.message || "Failed to delete task");
+    }
+  };
+
+  const handleStartEdit = (task: TaskResponse) => {
+    setEditingId(task.id);
+    setEditTitle(task.title);
+    setEditDescription(task.description || "");
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditTitle("");
+    setEditDescription("");
+  };
+
+  const handleUpdateTask = async (e: React.FormEvent, id: number) => {
+    e.preventDefault();
+    if (!editTitle.trim()) return;
+    try {
+      await taskService.updateTask(id, {
+        title: editTitle,
+        description: editDescription,
+      });
+      setEditingId(null);
+      fetchTasks();
+    } catch (err: any) {
+      setError(err.message || "Failed to update task");
     }
   };
 
@@ -97,19 +129,67 @@ export const DashboardPage: React.FC = () => {
               <li className="p-6 text-center text-gray-500">No tasks found. Create one above!</li>
             ) : (
               tasks.map((task) => (
-                <li key={task.id} className="flex items-center justify-between p-6">
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900">{task.title}</h3>
-                    {task.description && (
-                      <p className="text-sm text-gray-500">{task.description}</p>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => handleDeleteTask(task.id)}
-                    className="text-sm text-red-600 hover:text-red-800 font-medium"
-                  >
-                    Delete
-                  </button>
+                <li key={task.id} className="p-6">
+                  {editingId === task.id ? (
+                    /* Edit Form */
+                    <form onSubmit={(e) => handleUpdateTask(e, task.id)} className="space-y-4">
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        <input
+                          type="text"
+                          required
+                          value={editTitle}
+                          onChange={(e) => setEditTitle(e.target.value)}
+                          className={UI_STYLES.dashboardInput}
+                        />
+                        <input
+                          type="text"
+                          placeholder="Description (optional)"
+                          value={editDescription}
+                          onChange={(e) => setEditDescription(e.target.value)}
+                          className={UI_STYLES.dashboardInput}
+                        />
+                      </div>
+                      <div className="flex space-x-2">
+                        <button
+                          type="submit"
+                          className="rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700"
+                        >
+                          Save
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleCancelEdit}
+                          className="rounded-md bg-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-400"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
+                  ) : (
+                    /* Normal View */
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="text-lg font-medium text-gray-900">{task.title}</h3>
+                        {task.description && (
+                          <p className="text-sm text-gray-500">{task.description}</p>
+                        )}
+                      </div>
+                      <div className="flex space-x-4">
+                        <button
+                          onClick={() => handleStartEdit(task)}
+                          className="text-sm text-indigo-600 hover:text-indigo-800 font-medium"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteTask(task.id)}
+                          className="text-sm text-red-600 hover:text-red-800 font-medium"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </li>
               ))
             )}

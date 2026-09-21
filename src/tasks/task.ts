@@ -1,9 +1,9 @@
-export interface TaskCreateDTO {
+export interface TaskCreateDto {
   title: string;
   description?: string | null;
 }
 
-export interface TaskUpdateDTO {
+export interface TaskUpdateDto {
   title?: string | null;
   description?: string | null;
 }

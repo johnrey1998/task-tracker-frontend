@@ -1,6 +1,6 @@
 # Task Tracker Frontend
 
-A modern, responsive React frontend for the Task Tracker API, built with Vite+ (`vp`), Tailwind CSS.
+A React frontend for the [Task Tracker API](https://github.com/johnrey1998/task-tracker-api), built with Vite+ (`vp`), Tailwind CSS.
 
 ## Tech Stack
 
@@ -22,10 +22,10 @@ A modern, responsive React frontend for the Task Tracker API, built with Vite+ (
    vp install
    ```
 
-2. Create a `.env` file in the root directory:
+2. Create your environment file from the example:
 
-   ```env
-   VITE_API_BASE_URL=http://localhost:8000/api/v1
+   ```bash
+   cp .env.example .env
    ```
 
 3. Start the development server:
